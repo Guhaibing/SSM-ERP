@@ -21,7 +21,7 @@ import org.springframework.stereotype.Repository;
 public class UserDAOImpl extends SqlSessionDaoSupport implements UserDAO {
 
     @Autowired(required = false)
-    @Qualifier("sqlSessionFactory")
+    @Qualifier("readOnlySqlSessionFactory")
     public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
         super.setSqlSessionFactory(sqlSessionFactory);
     }
@@ -29,7 +29,7 @@ public class UserDAOImpl extends SqlSessionDaoSupport implements UserDAO {
     @Override
     public User selectUserByUserId(String userId) {
         SqlSession sqlSession = this.getSqlSession();
-        User user = sqlSession.selectOne("UserDAO.selectUserByUserId", userId);
+        User user = sqlSession.selectOne("com.hundsun.xone.ssm.dao.UserDAO.selectUserByUserId", userId);
         return user;
     }
 

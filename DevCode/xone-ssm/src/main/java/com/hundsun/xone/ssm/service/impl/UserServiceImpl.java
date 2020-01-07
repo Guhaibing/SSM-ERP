@@ -9,6 +9,7 @@
 package com.hundsun.xone.ssm.service.impl;
 
 import com.hundsun.xone.ssm.dao.UserDAO;
+import com.hundsun.xone.ssm.dao.impl.UserDAOImpl;
 import com.hundsun.xone.ssm.entity.User;
 import com.hundsun.xone.ssm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserDAO userDAO;
+    private UserDAOImpl userDAO;
 
     @Override
     public User queryUserById(String userId) {
