@@ -8,18 +8,19 @@
 
 package com.hundsun.xone.ssm.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.util.IntrospectorCleanupListener;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-//@Configuration // 配合测试使用
 public class WebInitConfig implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
@@ -31,6 +32,14 @@ public class WebInitConfig implements WebApplicationInitializer {
         servletContext.setResponseCharacterEncoding("UTF-8");
         servletContext.createFilter(CharacterEncodingFilter.class);
         servletContext.createListener(ContextLoaderListener.class);
+        servletContext.setSessionTimeout(60000);
+
+       /* servletContext.addListener(ContextLoaderListener.class);
+        servletContext.addListener(IntrospectorCleanupListener.class);
+
+        CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
+        encodingFilter.setEncoding("UTF-8");
+        servletContext.addFilter("encodingFilter", encodingFilter);*/
 
         ctx.register(SpringMVCConfig.class, RootConfig.class, SpringConfig.class);
         // 添加 DispatcherServlet
@@ -39,6 +48,7 @@ public class WebInitConfig implements WebApplicationInitializer {
         springmvc.addMapping("/");
         // 给 DispatcherServlet 添加启动时机
         springmvc.setLoadOnStartup(1);
+
     }
 
 }

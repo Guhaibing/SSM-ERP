@@ -8,25 +8,19 @@
 
 package com.hundsun.xone.ssm.test;
 
-import com.hundsun.xone.ssm.cache.CacheUtil;
 import com.hundsun.xone.ssm.config.RootConfig;
 import com.hundsun.xone.ssm.config.WebInitConfig;
 import com.hundsun.xone.ssm.dao.UserDAO;
-import com.hundsun.xone.ssm.dao.impl.UserDAOImpl;
 import com.hundsun.xone.ssm.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.Arrays;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //@Configuration("classpath:config/log4j2.xml")

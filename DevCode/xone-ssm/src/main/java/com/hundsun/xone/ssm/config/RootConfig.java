@@ -18,7 +18,6 @@ import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
@@ -36,25 +35,16 @@ public class RootConfig implements EnvironmentAware {
     private static final String prefix = "spring.mysql.dataSource.";
 
     @Value("${spring.mysql.dataSource.driverClass}")
-    private String driverClass = prefix + "driverClass";
+    private String driverClass;
 
     @Value("${spring.mysql.dataSource.url}")
-    private String url = prefix + "url";
+    private String url;
 
     @Value("${spring.mysql.dataSource.username}")
-    private String username = prefix + "username";
+    private String username;
 
     @Value("${spring.mysql.dataSource.password}")
-    private String password = prefix + "password";
-
-    @Value("${spring.mysql.dataSource.defaultReadOnly}")
-    private boolean defaultReadOnly = true;
-
-    private static String typeAliasesPackage = "com.hundsun.xone.ssm.entity";
-
-    private static String mapperLocations  = "classpath:mapper/UserMapper.xml";
-
-    private static String basePackage = "com.hundsun.xone.ssm.dao";
+    private String password;
 
     private static boolean enforceReadOnly = true;
 
@@ -63,22 +53,6 @@ public class RootConfig implements EnvironmentAware {
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = environment;
-    }
-
-    @Primary
-    @Bean("readOnlyDataSource")
-    public BasicDataSource readOnlyDataSource(){
-        BasicDataSource dataSource = new BasicDataSource();
-        this.initDataSource(dataSource);
-        return dataSource;
-    }
-
-    private void initDataSource(BasicDataSource dataSource) {
-       dataSource.setDriverClassName(this.environment.getProperty(driverClass));
-       dataSource.setUrl(this.environment.getProperty(url));
-       dataSource.setUsername(this.environment.getProperty(username));
-       dataSource.setPassword(this.environment.getProperty(password));
-       dataSource.setDefaultReadOnly(this.defaultReadOnly);
     }
 
     /**
@@ -91,40 +65,44 @@ public class RootConfig implements EnvironmentAware {
         return new JdbcTemplate(dataSource);
     }
 
+    @Bean("writeAndReadJdbcTemplate")
+    public JdbcTemplate writeAndReadJdbcTemplate(@Qualifier("writeAndReadDataSource") BasicDataSource dataSource){
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Primary
+    @Bean("readOnlyDataSource")
+    public BasicDataSource readOnlyDataSource(){
+        BasicDataSource dataSource = new BasicDataSource();
+        // 允许只读
+        dataSource.setDefaultReadOnly(true);
+        this.initDataSource(dataSource);
+        return dataSource;
+    }
+
+    @Bean("writeAndReadDataSource")
+    @Primary
+    public BasicDataSource writeAndReadDataSource(){
+        BasicDataSource dataSource = new BasicDataSource();
+        // 允许读写
+        dataSource.setDefaultReadOnly(false);
+        this.initDataSource(dataSource);
+        return dataSource;
+    }
+
     /**
-     * 加载mapper.xml文件配置sqlSessionFactory工厂，已弃用
+     * 初始化dataSource
      * @param dataSource
-     * @return
      */
-    @Bean("readOnlySqlSessionFactory")
-    public SqlSessionFactoryBean readOnlySqlSessionFactory(@Qualifier("readOnlyDataSource") BasicDataSource dataSource){
-        SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
-        sqlSessionFactory.setDataSource(dataSource);
-        sqlSessionFactory.setTypeAliasesPackage(typeAliasesPackage);
-
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource locations = resolver.getResource(mapperLocations);
-        sqlSessionFactory.setMapperLocations(locations);
-
-        return sqlSessionFactory;
+    private void initDataSource(BasicDataSource dataSource) {
+        dataSource.setDriverClassName(driverClass);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
     }
 
     /**
-     * 配置自动扫描dao包，已弃用
-     * @param sqlSessionFactory
-     * @return
-     */
-    @Bean("readOnlyMapperScannerConfigurer")
-    public MapperScannerConfigurer readOnlyMapperScannerConfigurer(@Qualifier("readOnlySqlSessionFactory") SqlSessionFactoryBean  sqlSessionFactory){
-        MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
-        mapperScannerConfigurer.setSqlSessionFactoryBeanName("readOnlySqlSessionFactory");
-        mapperScannerConfigurer.setBasePackage(basePackage);
-
-        return mapperScannerConfigurer;
-    }
-
-    /**
-     * 事务管理，暂未使用
+     * 事务管理, 强制限制只读操作
      * @param dataSource
      * @return
      */
@@ -136,5 +114,4 @@ public class RootConfig implements EnvironmentAware {
 
         return transactionManager;
     }
-
 }

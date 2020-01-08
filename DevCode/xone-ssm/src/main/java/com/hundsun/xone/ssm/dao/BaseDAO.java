@@ -9,4 +9,8 @@ public abstract class BaseDAO {
     @Autowired
     @Qualifier("readOnlyJdbcTemplate")
     protected JdbcTemplate readOnlyJdbcTemplate;
+
+    @Autowired
+    @Qualifier("writeAndReadJdbcTemplate")
+    protected JdbcTemplate writeAndReadJdbcTemplate;
 }

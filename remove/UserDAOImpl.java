@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+/**
+ * 弃用
+ */
 @Repository
 public class UserDAOImpl extends SqlSessionDaoSupport implements UserDAO {
 

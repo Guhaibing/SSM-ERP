@@ -6,14 +6,31 @@
     <title>个人详细信息查询</title>
 </head>
 <body>
+<div id="time" align="right">
+    <input type="button" value="停止" onclick="stop();"/><%--写这个按钮主要母的是用于测试。--%>
+</div>
+
+<script type="text/javascript">
+    var add=setInterval("getTime()",1000);
+    //stop()这个函数主要是清除设置的定时器
+    function stop() {
+        clearInterval(add);
+    }
+    //这个函数主要是获取时间然后写入div中
+    function getTime() {
+        var date=new Date().toLocaleString();//创建date对象，获取时间
+        var id1=document.getElementById("time");//通过div标签的id多去div标签
+        id1.innerHTML=date;//将时间通过innerHTML属性写入div标签中
+    }
+</script>
+
 <form action="listUserInfo" accept-charset="UTF-8">
     <table title="userInfo" bgcolor="#faebd7" align="center" width="500">
         <tr align="center">
             <td align="center">个人详细信息表</td>
         </tr>
         <%
-            ServletContext context = request.getServletContext();
-            User user = (User) context.getAttribute("user");%>
+            User user = (User) session.getAttribute("user");%>
         <% if (user != null) {%>
         <tr>
             <td>客户编号</td>

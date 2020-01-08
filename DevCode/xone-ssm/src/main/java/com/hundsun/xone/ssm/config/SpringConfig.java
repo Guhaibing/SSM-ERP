@@ -29,7 +29,7 @@ public class SpringConfig {
      * 配置监听器监听web容器
      * @return
      */
-    @Bean
+    @Bean("contextLoaderListener")
     @Primary
     public ContextLoaderListener contextLoaderListener(){
         return new ContextLoaderListener();

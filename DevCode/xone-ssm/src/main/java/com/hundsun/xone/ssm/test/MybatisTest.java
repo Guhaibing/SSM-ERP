@@ -31,7 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@Configuration
+//@Configuration
 /*@ContextConfiguration(locations = {"classpath:spring/spring-mybatis.xml"})*/
 /*@ContextConfiguration(classes = {RootConfig.class})*/
 @PropertySource(value = {"classpath:config/application.properties"})

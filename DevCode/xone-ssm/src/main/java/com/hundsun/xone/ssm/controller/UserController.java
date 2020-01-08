@@ -8,14 +8,15 @@
 
 package com.hundsun.xone.ssm.controller;
 
+import com.hundsun.xone.ssm.dao.support.ResultInfo;
 import com.hundsun.xone.ssm.entity.User;
 import com.hundsun.xone.ssm.service.impl.UserServiceImpl;
+import com.hundsun.xone.ssm.util.SpringContextUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,18 +37,44 @@ public class UserController implements Serializable {
     @Autowired
     UserServiceImpl userService;
 
-    @RequestMapping(value = "/hello", method = RequestMethod.GET)
-    public void hello(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.getWriter().write("hello");
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public String hello(HttpServletRequest request, HttpServletResponse response){
+
+        ApplicationContext context = SpringContextUtil.getApplicationContext();
+        String[] beanDefinitionNames = context.getBeanDefinitionNames();
+        System.out.println(beanDefinitionNames.length);
+        for (String beanName : beanDefinitionNames) {
+            System.out.println("beanName: " + beanName);
+        }
+        return "addUser";
     }
 
     @RequestMapping(value = "/queryUserById", method = RequestMethod.POST)
     public String queryUserById(HttpServletRequest request, HttpServletResponse response, @RequestParam("userId") String userId){
         User user = userService.queryUserById(userId);
-        ServletContext context = request.getServletContext();
-        context.setAttribute("user", user);
+
+        request.getSession().setAttribute("user", user);
         System.out.println(user.toString());
         return "listUserInfo";
+    }
+
+    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
+    public void addUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = new User();
+
+        user.setUserId(request.getParameter("userId"));
+        user.setUserName(request.getParameter("userName"));
+        user.setUserPwd(request.getParameter("userPwd"));
+        user.setUserStatus(request.getParameter("userStatus").charAt(0));
+        user.setUserType(request.getParameter("userType").charAt(0));
+        user.setRemark(request.getParameter("remark"));
+        user.setLoginFlag(request.getParameter("loginFlag").charAt(0));
+        request.getSession().setAttribute("user",user);
+
+        ResultInfo resultInfo = userService.addUser(user);
+        System.out.println("添加新用户："+user.toString());
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(resultInfo.getOpRemark());
     }
 
     @RequestMapping(value = "/loginCheck", method = RequestMethod.POST)
@@ -60,7 +87,6 @@ public class UserController implements Serializable {
         String password = request.getParameter("password");
 
         User user = userService.queryUserByName(username);
-
 
         if (user == null) {
             response.getWriter().write("不存在该用户,请注册");
