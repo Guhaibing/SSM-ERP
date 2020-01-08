@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:config/*.properties"/>
+
+    <context:component-scan base-package="com.hundsun.xone.ssm.*"/>
+
+    <context:annotation-config />
+
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="${spring.mysql.dataSource.driverClass}"/>
+        <property name="url" value="${spring.mysql.dataSource.url}"/>
+        <property name="username" value="${spring.mysql.dataSource.username}"/>
+        <property name="password" value="${spring.mysql.dataSource.password}"/>
+        <property name="defaultReadOnly" value="${spring.mysql.dataSource.defaultReadOnly}"/>
+
+        <!-- 特殊配置-->
+        <!--<property name="loginTimeout" value="5"/>-->
+        <property name="initialSize" value="5"/>
+        <property name="maxTotal" value="10"/>
+        <property name="maxIdle" value="5"/>
+        <property name="minIdle" value="1"/>
+        <property name="defaultQueryTimeout" value="3"/>
+        <property name="validationQueryTimeout" value="3"/>
+        <property name="maxConnLifetimeMillis" value="5000"/>
+    </bean>
+
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 省略实体类全限定名-->
+        <property name="typeAliasesPackage" value="com.hundsun.xone.ssm.entity"/>
+       <!-- <property name="typeAliasesPackage" value="com.hundsun.xone.ssm"/>-->
+        <!-- 自动扫描mapper文件-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <!-- mapper方式开发的配置-->
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.hundsun.xone.ssm.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!-- 事务管理-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="enforceReadOnly" value="true"/>
+    </bean>
+</beans>
