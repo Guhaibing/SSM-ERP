@@ -10,4 +10,8 @@ public interface UserDAO {
     User selectUserByUserName(String username);
 
     ResultInfo insertUser(User user);
+
+    boolean existingUser(String userId);
+
+    ResultInfo updateUser(User user);
 }

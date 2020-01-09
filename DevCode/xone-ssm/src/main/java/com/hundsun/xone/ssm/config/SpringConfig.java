@@ -9,6 +9,7 @@
 package com.hundsun.xone.ssm.config;
 
 import org.springframework.context.annotation.*;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -21,6 +22,7 @@ import org.springframework.web.util.IntrospectorCleanupListener;
  * 即在 Spring 容器中扫描除了 Controller 之外的其他所有 Bean 。
  */
 @Configuration
+//@Order(2)
 @ComponentScan(basePackages = "com.hundsun.xone.ssm.service", useDefaultFilters = true,
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class)})
 public class SpringConfig {
@@ -29,7 +31,7 @@ public class SpringConfig {
      * 配置监听器监听web容器
      * @return
      */
-    @Bean("contextLoaderListener")
+    @Bean
     @Primary
     public ContextLoaderListener contextLoaderListener(){
         return new ContextLoaderListener();
@@ -44,7 +46,7 @@ public class SpringConfig {
         return new IntrospectorCleanupListener();
     }
 
-    @Bean("encodingFilter")
+    @Bean
     public CharacterEncodingFilter encodingFilter(){
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");

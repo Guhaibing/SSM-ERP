@@ -13,8 +13,12 @@ import com.hundsun.xone.ssm.dao.UserDAO;
 import com.hundsun.xone.ssm.dao.support.ResultInfo;
 import com.hundsun.xone.ssm.entity.SysTime;
 import com.hundsun.xone.ssm.entity.User;
+import com.hundsun.xone.ssm.util.Md5Util;
 import com.hundsun.xone.ssm.util.TimeUtil;
 import org.springframework.stereotype.Repository;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * 通过实现jdbcTemplate操作数据库，不再需要mapper.xml，配置映射文件
@@ -74,7 +78,13 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             preparedStatement.setString(2, user.getUserName());
             preparedStatement.setString(3, String.valueOf(user.getUserType()));
             preparedStatement.setString(4, String.valueOf(user.getUserStatus()));
-            preparedStatement.setString(5, user.getUserPwd());
+            try {
+                preparedStatement.setString(5, Md5Util.getEncryptedPwd(user.getUserPwd()));
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             SysTime sysTime = TimeUtil.getSysTime();
             preparedStatement.setInt(6, sysTime.getCurrDate());
             preparedStatement.setInt(7, sysTime.getCurrTime());
@@ -86,6 +96,47 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
 
         StringBuilder builder = new StringBuilder();
         builder.append("新增用户：").append(user.getUserName()).append("；");
+        resultInfo.setOpRemark(builder.toString());
+        long serialNo = 0L;
+        resultInfo.setSerialNo(serialNo);
+
+        return resultInfo;
+    }
+
+    @Override
+    public boolean existingUser(String userId) {
+        String sql = "select exists (select 1 from ssm_user where user_id=?);";
+        return readOnlyJdbcTemplate.queryForObject(sql, new Object[]{userId}, Boolean.class);
+    }
+
+    public ResultInfo updateUser(User user){
+        String sql = "update ssm_user set user_name = ifnull(?,''), " +
+                "user_type = ifnull(?,' '), user_status = ifnull(?,' '), user_pwd = ifnull(?,''), " +
+                "last_update_date = ifnull(?,0), last_update_time = ifnull(?,0), remark = ifnull(?,'')," +
+                " login_flag = ifnull(?,' ') where user_id = ?";
+
+        ResultInfo resultInfo = new ResultInfo();
+        writeAndReadJdbcTemplate.update(sql,preparedStatement ->{
+            preparedStatement.setString(1, user.getUserName());
+            preparedStatement.setString(2, user.getUserType().toString());
+            preparedStatement.setString(3, user.getUserStatus().toString());
+            try {
+                preparedStatement.setString(4, Md5Util.getEncryptedPwd(user.getUserPwd()));
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            SysTime sysTime = TimeUtil.getSysTime();
+            preparedStatement.setInt(5, sysTime.getCurrDate());
+            preparedStatement.setInt(6, sysTime.getCurrTime());
+            preparedStatement.setString(7, user.getRemark());
+            preparedStatement.setString(8, String.valueOf(user.getLoginFlag()));
+            preparedStatement.setString(9, user.getUserId());
+        });
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("修改用户信息：").append(user.getUserName()).append("；");
         resultInfo.setOpRemark(builder.toString());
         long serialNo = 0L;
         resultInfo.setSerialNo(serialNo);

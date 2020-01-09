@@ -10,4 +10,8 @@ public interface UserService {
     User queryUserByName(String username);
 
     ResultInfo addUser(User user);
+
+    boolean existingUser(String userId);
+
+    ResultInfo updateUser(User user);
 }

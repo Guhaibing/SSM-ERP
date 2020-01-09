@@ -6,11 +6,11 @@
     <title>欢迎登录</title>
     <script type="text/javascript">
         function login() {
-            document.form1.action="${pageContext.request.contextPath}/loginCheck";
+            document.form1.action="${pageContext.request.contextPath}/user/login";
             document.form1.submit();
         }
         function register() {
-            document.form1.action="${pageContext.request.contextPath}/register";
+            document.form1.action="${pageContext.request.contextPath}/user/register";
             document.form1.submit();
         }
     </script>

@@ -11,10 +11,14 @@ package com.hundsun.xone.ssm.config;
 
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.hundsun.xone.ssm.config.interceptor.LoginHandlerInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -33,11 +37,17 @@ import java.util.List;
  * 可以实现接口WebMvcConfigurer， 也可以继承 WebMvcConfigurationSupport 类
  */
 @Configuration
-@EnableWebMvc
-@ComponentScan(basePackages = {"com.hundsun.xone.ssm.controller"},useDefaultFilters = false
+//@EnableWebMvc
+// 如果想保持Spring Boot MVC原本的配置（自动配置）并且又想增加自己的配置，
+// 那么add your own @Configuration class of type WebMvcConfigurer but without @EnableWebMvc
+// 因为@EnableWebMvc中导入实现了WebMvcConfigurationSupport的默认配置类，所以下面的添加拦截器刚开始失败
+//@Order(3)
+@ComponentScan(basePackages = {"com.hundsun.xone.ssm.controller", "com.hundsun.xone.ssm.config.interceptor"},useDefaultFilters = false
         , includeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION,classes = Controller.class)})
 public class SpringMVCConfig extends WebMvcConfigurationSupport {
 
+    @Autowired
+    private LoginHandlerInterceptor handlerInterceptor;
     /**
      * 配置页面路径和.jsp文件
      * @return
@@ -57,7 +67,9 @@ public class SpringMVCConfig extends WebMvcConfigurationSupport {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("/WEB-INF/static/");
+        registry.addResourceHandler("/**").addResourceLocations("/WEB-INF/static/");
+        System.out.println("加载配置文件");
+        registry.addResourceHandler("/config/application.properties").addResourceLocations("classpath:config/application.properties");
     }
 
     /**
@@ -92,4 +104,14 @@ public class SpringMVCConfig extends WebMvcConfigurationSupport {
         converters.add(converter);
     }
 
+    /**
+     * 启用自定义拦截器拦截指定url
+     * @param registry
+     */
+    @Override
+    protected void addInterceptors(InterceptorRegistry registry) {
+        // 登录拦截，只允许登录或注册后，方可执行用户操作
+        registry.addInterceptor(handlerInterceptor)
+        .addPathPatterns("/user/*").excludePathPatterns("/user/login","/user/register");
+    }
 }

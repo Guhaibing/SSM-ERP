@@ -15,9 +15,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.*;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
@@ -28,6 +27,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
  * 2.通过PropertySource 将配置文件加载到Context中， 再通过EnvironmentAware可以从contxet获取property,本例使用@Value获取
  */
 @Configuration
+//@Order(1)
 @PropertySource(value = {"classpath:config/application.properties"})
 @ComponentScan(value = {"com.hundsun.xone.ssm"})
 public class RootConfig implements EnvironmentAware {

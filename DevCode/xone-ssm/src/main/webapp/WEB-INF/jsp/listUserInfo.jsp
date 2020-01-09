@@ -24,43 +24,37 @@
     }
 </script>
 
-<form action="listUserInfo" accept-charset="UTF-8">
+<form name="userForm" accept-charset="UTF-8" method="post">
     <table title="userInfo" bgcolor="#faebd7" align="center" width="500">
         <tr align="center">
-            <td align="center">个人详细信息表</td>
+            <td align="center" colspan="2">个人详细信息表</td>
         </tr>
         <%
             User user = (User) session.getAttribute("user");%>
         <% if (user != null) {%>
         <tr>
             <td>客户编号</td>
-            <td><%=user.getUserId()%>
-            </td>
+            <td><%=user.getUserId()%></td>
         </tr>
         <tr>
             <td>客户名字</td>
-            <td><%=user.getUserName()%>
-            </td>
+            <td><%=user.getUserName()%></td>
         </tr>
         <tr>
             <td>客户类别</td>
-            <td><%=user.getUserType()%>
-            </td>
+            <td><%=user.getUserType()%></td>
         </tr>
         <tr>
             <td>用户状态</td>
-            <td><%=user.getUserStatus()%>
-            </td>
+            <td><%=user.getUserStatus()%></td>
         </tr>
         <tr>
             <td>认证密码</td>
-            <td><%=user.getUserPwd()%>
-            </td>
+            <td>已加密</td>
         </tr>
         <tr>
             <td>上次更新日期</td>
-            <td><%=user.getLastUpdateDate()%>
-            </td>
+            <td><%=user.getLastUpdateDate()%></td>
         </tr>
         <tr>
             <td>上次更新时间</td>
@@ -69,13 +63,11 @@
         </tr>
         <tr>
             <td>备注</td>
-            <td><%=user.getRemark()%>
-            </td>
+            <td><%=user.getRemark()%></td>
         </tr>
         <tr>
             <td>登录标志</td>
-            <td><%=user.getLoginFlag()%>
-            </td>
+            <td><%=user.getLoginFlag()%></td>
         </tr>
         <%} else {%>
         <tr>无</tr>

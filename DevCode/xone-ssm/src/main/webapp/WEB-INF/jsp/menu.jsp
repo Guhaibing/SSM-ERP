@@ -15,7 +15,7 @@
 <table align="center" bgcolor="aqua">
     <tr>
         <td>
-            <form action="${pageContext.request.contextPath}/queryUserById" accept-charset="UTF-8" name="查询用户信息" method="post">
+            <form action="${pageContext.request.contextPath}/user/queryUserById" accept-charset="UTF-8" name="查询用户信息" method="post">
                 用户编号：<input type="text" placeholder="user_id" name="userId"/>
                 <input type="submit" name="submit" value="确定">
             </form>

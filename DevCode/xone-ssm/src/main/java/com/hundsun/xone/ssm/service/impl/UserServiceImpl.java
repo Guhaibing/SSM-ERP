@@ -35,4 +35,14 @@ public class UserServiceImpl implements UserService {
     public ResultInfo addUser(User user) {
         return userDAO.insertUser(user);
     }
+
+    @Override
+    public boolean existingUser(String userId) {
+        return userDAO.existingUser(userId);
+    }
+
+    @Override
+    public ResultInfo updateUser(User user) {
+        return userDAO.updateUser(user);
+    }
 }
