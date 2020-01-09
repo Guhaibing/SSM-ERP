@@ -29,22 +29,22 @@ import org.springframework.test.context.ContextConfiguration;
  * 2.通过EnvironmentAware可以获取property,但本例使用@Value获取
  */
 @Configuration
-//@PropertySource(value = {"classpath:config/application.properties"})
+@PropertySource(value = {"classpath:config/application.properties"})
 @ComponentScan(value = {"com.hundsun.xone.ssm"})
 public class RootConfig implements EnvironmentAware {
 
     private static final String prefix = "spring.mysql.dataSource.";
 
-//    @Value("${spring.mysql.dataSource.driverClass}")
+    @Value("${spring.mysql.dataSource.driverClass}")
     private String driverClass = prefix + "driverClass"/*"com.mysql.jdbc.Driver"*/;
 
-//    @Value("${spring.mysql.dataSource.url}")
+    @Value("${spring.mysql.dataSource.url}")
     private String url = prefix + "url" /*"jdbc:mysql://127.0.0.1:3306/ssm_flowerstore?serverTimezone=UTC&characterEncoding=utf-8&useSSL=false"*/;
 
-//    @Value("${spring.mysql.dataSource.username}")
+    @Value("${spring.mysql.dataSource.username}")
     private String username = prefix + "username"/*"root"*/;
 
-//    @Value("${spring.mysql.dataSource.password}")
+    @Value("${spring.mysql.dataSource.password}")
     private String password = prefix + "password"/*"root"*/;
 
 //    @Value("${spring.mysql.dataSource.defaultReadOnly}")
@@ -74,11 +74,6 @@ public class RootConfig implements EnvironmentAware {
     }
 
     private void initDataSource(BasicDataSource dataSource) {
-       /* dataSource.setDriverClassName(driverClass);
-        dataSource.setUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setDefaultReadOnly(defaultReadOnly);*/
        dataSource.setDriverClassName(this.environment.getProperty(driverClass));
        dataSource.setUrl(this.environment.getProperty(url));
        dataSource.setUsername(this.environment.getProperty(username));
